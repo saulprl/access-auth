@@ -1,5 +1,6 @@
 import axios from "axios";
 import express from "express";
+import cors from "cors";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -7,12 +8,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
+
 // GitHub OAuth credentials
 const REDIRECT_URL_WEB = process.env.GITHUB_WEB_REDIRECT;
 const REDIRECT_URL_MOBILE = process.env.GITHUB_MOBILE_REDIRECT;
 
 // Endpoint to handle GitHub web callback
 app.get("/oauth/callback/web", async (req, res) => {
+  const code = req.query.code;
+  const redirectURL = `${REDIRECT_URL_WEB}?code=${code}`;
+  res.redirect(redirectURL);
+});
+
+// Endpoint to exchange code for access token
+app.post("/oauth/callback/web", async (req, res) => {
   const code = req.query.code;
   try {
     const tokenResponse = await axios.post(
@@ -30,12 +40,13 @@ app.get("/oauth/callback/web", async (req, res) => {
     );
 
     const accessToken = tokenResponse.data.access_token;
-    const redirectURL = `${REDIRECT_URL_WEB}?access_token=${accessToken}`;
 
-    res.redirect(redirectURL);
+    res.status(200).json({ accessToken });
   } catch (error) {
-    console.error(error);
-    res.redirect(REDIRECT_URL_WEB);
+    res.status(500).json({
+      message: "Something went wrong during the exhange.",
+      error,
+    });
   }
 });
 
