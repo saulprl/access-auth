@@ -12,7 +12,7 @@ app.use(cors());
 
 // GitHub OAuth credentials
 // const REDIRECT_URL_WEB = process.env.GITHUB_WEB_REDIRECT;
-const REDIRECT_URL_WEB = "http://localhost:5173/oauth/callback/web";
+const REDIRECT_URL_WEB = "http://localhost:5173/oauth/callback";
 const REDIRECT_URL_MOBILE = process.env.GITHUB_MOBILE_REDIRECT;
 
 // Endpoint to handle GitHub web callback
