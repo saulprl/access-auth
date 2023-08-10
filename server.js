@@ -22,6 +22,12 @@ app.get("/oauth/callback/web", async (req, res) => {
   res.redirect(redirectURL);
 });
 
+app.get("/oauth/callback/web/link", async (req, res) => {
+  const code = req.query.code;
+  const redirectURL = `${REDIRECT_URL_WEB}/link?code=${code}`;
+  res.redirect(redirectURL);
+});
+
 // Endpoint to exchange code for access token
 app.post("/oauth/callback/web", async (req, res) => {
   const code = req.query.code;
