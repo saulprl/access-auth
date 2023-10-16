@@ -14,7 +14,7 @@ app.use(cors());
 
 // GitHub OAuth credentials
 const REDIRECT_URL_MIGRATION = process.env.GITHUB_MIGRATION_REDIRECT;
-const REDIRECT_URL_WEB = "http://192.168.100.24:5173/access/oauth/callback";
+const REDIRECT_URL_WEB = process.env.GITHUB_WEB_REDIRECT;
 const REDIRECT_URL_MOBILE = process.env.GITHUB_MOBILE_REDIRECT;
 
 app.get("/oauth/callback/web", async (req, res) => {
