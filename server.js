@@ -16,6 +16,7 @@ app.use(cors());
 const REDIRECT_URL_MIGRATION = process.env.GITHUB_MIGRATION_REDIRECT;
 const REDIRECT_URL_WEB = process.env.GITHUB_WEB_REDIRECT;
 const REDIRECT_URL_MOBILE = process.env.GITHUB_MOBILE_REDIRECT;
+const REDIRECT_URL_NATIVE = process.env.GITHUB_MOBILE_NATIVE_REDIRECT;
 
 app.get("/oauth/callback/web", async (req, res) => {
   const code = req.query.code;
@@ -72,6 +73,35 @@ app.get("/oauth/callback/mobile", (req, res) => {
   const redirectURL = `${REDIRECT_URL_MOBILE}?code=${code}`;
   res.redirect(redirectURL);
 });
+
+app.get("/oauth/callback/native", async (req, res) => {
+  const code = req.query.code;
+
+  try {
+    const tokenResponse = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code: code,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    res.redirect(`${REDIRECT_URL_NATIVE}://?accessToken=${accessToken}`);
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong during the exhange.",
+      error,
+    });
+  }
+})
 
 app.post("/passcode-encrypt", async (req, res) => {
   const { passcode } = req.body;
